@@ -1,0 +1,16 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  file-transformer:
+    lang: python3-http
+    handler: ./file-transformer
+    image: ewannk/file-transformer:latest
+    environment:
+      USER_ID: "US17"
+      SFTP_HOST: "ftp.heab7543.odns.fr"
+      SFTP_USER: "formation_openfaas@heab7543.odns.fr"
+      SFTP_PASS: "}{?Z]~Pxq!R9"
+    annotations:
+      topic: orders.import

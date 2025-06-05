@@ -1,0 +1,16 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  daily-fetcher:
+    lang: python3-http
+    handler: ./daily-fetcher
+    image: ewannk/daily-fetcher:latest
+    environment:
+      USER_ID: "US17"
+      GATEWAY_URL: "http://gateway.openfaas.svc.cluster.local:8080"
+    annotations:
+      topic: orders.import
+      schedule: "00 8 * * *"
+      version: 1.0

@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: daily-fetcher-cron
+spec:
+  schedule: "0 8 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: curl-trigger
+            image: curlimages/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - curl -X POST http://gateway.openfaas:8080/function/daily-fetcher
+          restartPolicy: OnFailure
