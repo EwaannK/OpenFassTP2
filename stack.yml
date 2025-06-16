@@ -1,0 +1,52 @@
+# stack.yml
+# Fichier de déploiement pour les fonctions du projet DataRetailX (US17)
+
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080 # Adaptez si votre gateway est différente
+
+functions:
+  # 1. Fonction planifiée pour simuler l'arrivée d'une commande
+  daily-fetcher:
+    lang: python3-http
+    handler: ./daily-fetcher
+    image: ewannk/daily-fetcher:latest
+    annotations:
+      # Se déclenche tous les jours à 8h du matin
+      topic: "cron-function"
+      schedule: "0 8 * * *"
+    environment:
+      # Le message est publié sur ce topic NATS
+      write_topic: "orders.import"
+
+  # 2. Fonction pour transformer le fichier de commande
+  file-transformer:
+    lang: python3-http
+    handler: ./file-transformer
+    image: ewannk/file-transformer:latest
+    annotations:
+      # Se déclenche à la réception d'un message sur le topic NATS
+      topic: "orders.import"
+    environment:
+      # Variables d'environnement pour la connexion SFTP
+      USER_ID: "US17" # Votre identifiant personnel
+      SFTP_HOST: "ftp.heab7543.odns.fr"
+      SFTP_USER: "formation_openfaas@heab7543.odns.fr"
+      SFTP_PASS: "}{?Z]~Pxq!R9"
+      read_timeout: 1m # Augmente le timeout pour les opérations réseau
+      write_timeout: 1m
+
+  # 3. Fonction pour vérifier le statut du traitement
+  status-checker:
+    lang: python3-http
+    handler: ./status-checker
+    image: ewannk/status-checker:latest
+    # Déclencheur par défaut : HTTP GET/POST
+    environment:
+      # Variables d'environnement pour la connexion SFTP
+      USER_ID: "US17" # Votre identifiant personnel
+      SFTP_HOST: "ftp.heab7543.odns.fr"
+      SFTP_USER: "formation_openfaas@heab7543.odns.fr"
+      SFTP_PASS: "}{?Z]~Pxq!R9"
+      read_timeout: 1m
+      write_timeout: 1m
