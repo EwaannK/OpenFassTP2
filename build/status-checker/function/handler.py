@@ -19,7 +19,8 @@ def handle(event, context):
         ftp.login(ftp_user, ftp_pass)
         ftp.cwd(depot_path)
 
-        files = ftp.nlst()  # Liste des fichiers
+        files = [f for f in ftp.nlst() if f not in ('.', '..')]
+        files = ftp.nlst()
         file_count = len(files)
 
         ftp.quit()

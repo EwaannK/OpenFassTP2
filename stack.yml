@@ -18,6 +18,7 @@ functions:
     environment:
       # Le message est publié sur ce topic NATS
       write_topic: "orders.import"
+      USER_ID: "US17"
 
   # 2. Fonction pour transformer le fichier de commande
   file-transformer:
@@ -25,7 +26,6 @@ functions:
     handler: ./file-transformer
     image: ewannk/file-transformer:latest
     annotations:
-      # Se déclenche à la réception d'un message sur le topic NATS
       topic: "orders.import"
     environment:
       # Variables d'environnement pour la connexion SFTP
